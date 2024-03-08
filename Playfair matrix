@@ -1,0 +1,87 @@
+#include <stdio.h>
+#include <string.h>
+#include <ctype.h>
+
+#define MATRIX_SIZE 5
+#define CHAR_J 'J'
+
+// Function to initialize the Playfair matrix
+void initialize_matrix(char matrix[MATRIX_SIZE][MATRIX_SIZE]) {
+    char playfair_key[] = "MFHIJ KUNOPQZVWXYELARGBDSTC";
+    int index = 0;
+
+    for (int i = 0; i < MATRIX_SIZE; i++) {
+        for (int j = 0; j < MATRIX_SIZE; j++) {
+            matrix[i][j] = playfair_key[index++];
+        }
+    }
+}
+
+// Function to find the row and column of a letter in the Playfair matrix
+void find_position(char matrix[MATRIX_SIZE][MATRIX_SIZE], char letter, int *row, int *col) {
+    if (letter == CHAR_J)
+        letter = 'I'; // Replace J with I
+
+    for (int i = 0; i < MATRIX_SIZE; i++) {
+        for (int j = 0; j < MATRIX_SIZE; j++) {
+            if (matrix[i][j] == letter) {
+                *row = i;
+                *col = j;
+                return;
+            }
+        }
+    }
+}
+
+// Function to encrypt a pair of letters using the Playfair cipher rules
+void encrypt_pair(char matrix[MATRIX_SIZE][MATRIX_SIZE], char letter1, char letter2, char *cipher1, char *cipher2) {
+    int row1, col1, row2, col2;
+    find_position(matrix, toupper(letter1), &row1, &col1);
+    find_position(matrix, toupper(letter2), &row2, &col2);
+
+    if (row1 == row2) {
+        *cipher1 = matrix[row1][(col1 + 1) % MATRIX_SIZE];
+        *cipher2 = matrix[row2][(col2 + 1) % MATRIX_SIZE];
+    } else if (col1 == col2) {
+        *cipher1 = matrix[(row1 + 1) % MATRIX_SIZE][col1];
+        *cipher2 = matrix[(row2 + 1) % MATRIX_SIZE][col2];
+    } else {
+        *cipher1 = matrix[row1][col2];
+        *cipher2 = matrix[row2][col1];
+    }
+}
+
+// Function to encrypt a plaintext message using the Playfair cipher
+void playfair_encrypt(char matrix[MATRIX_SIZE][MATRIX_SIZE], const char *plaintext, char *ciphertext) {
+    int len = strlen(plaintext);
+    int index = 0;
+
+    for (int i = 0; i < len; i += 2) {
+        char letter1 = plaintext[i];
+        char letter2 = (i + 1 < len) ? plaintext[i + 1] : 'X'; // Add 'X' if the plaintext has odd length
+
+        if (letter1 == letter2) {
+            letter2 = 'X'; // If two consecutive letters are the same, insert 'X' between them
+            i--; // Re-process the current letter
+        }
+int main() {
+    char matrix[MATRIX_SIZE][MATRIX_SIZE];
+    char plaintext[] = "Must see you over Cadogan West. Coming at once.";
+    char ciphertext[100];
+
+    initialize_matrix(matrix);
+    playfair_encrypt(matrix, plaintext, ciphertext);
+
+    printf("Plaintext: %s\n", plaintext);
+    printf("Ciphertext: %s\n", ciphertext);
+
+    return 0;
+}
+
+        char cipher1, cipher2;
+        encrypt_pair(matrix, letter1, letter2, &cipher1, &cipher2);
+        ciphertext[index++] = cipher1;
+        ciphertext[index++] = cipher2;
+    }
+    ciphertext[index] = '\0';
+}
